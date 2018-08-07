@@ -1,0 +1,10 @@
+/inputs
+/output
+*.tiff
+*.png
+*.jpeg
+*.jpg
+/samples
+/attempts
+/.pytest_cache
+__pycache__
