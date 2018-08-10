@@ -47,5 +47,5 @@ def white_proportion_crop(img):
 def test_white_proportion_crop():
     image = cv2.imread("test/fixtures/books.jpg")
     # crazy overfit example
-    crops = crop(image, white_proportion_crop, splits=32, threshold_mult=0.24)
-    assert crops == (152, 837, 336, 1153)
+    crops = crop(image, white_proportion_crop, splits=128, dilate=8, threshold_mult=0.24)
+    assert crops == (135, 901, 276, 1213)

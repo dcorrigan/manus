@@ -5,6 +5,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import itertools
+from scipy.ndimage import measurements, generate_binary_structure, binary_dilation
 
 
 def crop(
@@ -12,7 +13,7 @@ def crop(
     test_func,
     splits=64,
     threshold_mult=1.4,
-    backoff=True,
+    dilate=1,
     debug=False,
     debug_title=lambda r: round(r, 4),
 ):
@@ -25,20 +26,6 @@ def crop(
         top = t * height_unit
         left = l * width_unit
         return image[top:(top + height_unit), left:(left + width_unit)]
-
-    def working_tiers(matrix):
-        return [index for index, tier in enumerate(matrix) if tier.mean() > threshold]
-
-    def continuous_ranges(arr):
-        uniq = []
-        for k, g in itertools.groupby(enumerate(arr), key=lambda iv: iv[0] - iv[1]):
-            uniq.append([j for i, j in g])
-        return uniq
-
-    def corner(arrs):
-        for arr in arrs:
-            if len(arr) > round(splits * 0.1):
-                return arr[0]
 
     results_coll = np.ndarray(shape=(splits, splits))
 
@@ -64,28 +51,29 @@ def crop(
         plt.tight_layout()
         plt.savefig("debug.png")
 
+    binary = results_coll > threshold
+    for _n in range(dilate):
+        binary = binary_dilation(binary)
 
-    rows = continuous_ranges(working_tiers(results_coll))
-    top_edge = corner(rows) or 0
-    bottom_edge = corner([list(reversed(i)) for i in reversed(rows)]) or splits - 1
+    struct = generate_binary_structure(2,2)
+    # applies numeric labels to contiguous clusters of True values
+    labeled_arr, _num_features = measurements.label(binary, structure=struct)
+    # determines the area of every labeled cluster
+    cluster_sizes = measurements.sum(binary, labeled_arr, index=np.arange(labeled_arr.max() + 1))
+    # finds the cluster label with the greatest area
+    label = cluster_sizes.argmax()
+    # returns the coordinates for every tile within the largest cluster
+    indices = np.where(labeled_arr == label)
 
-    cols = continuous_ranges(working_tiers(results_coll.T))
-    left_edge = corner(cols) or 0
-    right_edge = corner([list(reversed(i)) for i in reversed(cols)]) or splits - 1
+    # find the outermost perimeter of the cluster
+    top_edge = indices[0].min()
+    bottom_edge = indices[0].max()
+    left_edge = indices[1].min()
+    right_edge = indices[1].max()
 
     top = top_edge * height_unit
     bottom = (bottom_edge * height_unit) + 1 # add one to make it inclusive for numpy slice
     left = left_edge * width_unit
     right = (right_edge * width_unit) + 1 # add one to make it inclusive for numpy slice
-
-    if backoff:
-        if top != 0:
-            top -= height_unit
-        if bottom != 0:
-            bottom += height_unit
-        if left != 0:
-            left -= width_unit
-        if right != 0:
-            right += width_unit
 
     return (top, bottom, left, right)
