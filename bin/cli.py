@@ -14,12 +14,32 @@ def base_parser():
         type=int,
         default=64,
     )
-    parser.add_argument("-d", "--debug", help="print debugging figure", action='store_true')
+    parser.add_argument(
+        "-dl",
+        "--dilate",
+        help="the number of time to apply binary dilation to the tiled results",
+        type=int,
+        default=1,
+    )
+    parser.add_argument(
+        "--threshold",
+        help="the multiplier to apply when to the base image result of the test function",
+        type=float,
+        default=2.5,
+    )
+    parser.add_argument(
+        "-d", "--debug", help="print debugging figure", action="store_true"
+    )
     return parser
 
 
 def crop_args(args):
-    return {"debug": args.debug, "splits": args.tiles}
+    return {
+        "debug": args.debug,
+        "splits": args.tiles,
+        "dilate": args.dilate,
+        "threshold_mult": args.threshold,
+    }
 
 
 class ImageIO():

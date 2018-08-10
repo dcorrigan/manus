@@ -25,7 +25,7 @@ def preprocess_image(image):
 def process_image(args):
     io = ImageIO(args)
     binary_img = preprocess_image(io.content)
-    crops = crop(binary_img, edge_proportion, threshold_mult=2.5, dilate=1, **crop_args(args))
+    crops = crop(binary_img, edge_proportion, **crop_args(args))
     io.write_output(io.content[crops[0]:crops[1], crops[2]:crops[3]])
 
 
