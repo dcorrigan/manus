@@ -7,9 +7,9 @@ from skimage.color import rgb2gray
 from skimage.filters import threshold_mean
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)) + "/..")
-from manos.utils import auto_adjust_color
-from manos.quantifiers import edge_proportion
-from manos.crop import crop
+from manus.utils import auto_adjust_color
+from manus.quantifiers import edge_proportion
+from manus.crop import crop
 
 from cli import base_parser, ImageIO, crop_args
 

@@ -1,4 +1,4 @@
-import manos.utils as utils
+import manus.utils as utils
 
 
 def test_image_area_factors():

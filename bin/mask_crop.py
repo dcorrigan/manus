@@ -5,8 +5,8 @@ import argparse
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)) + "/..")
-from manos.utils import auto_adjust_color, gimp2opencv, write_hsv
-from manos.crop import crop
+from manus.utils import auto_adjust_color, gimp2opencv, write_hsv
+from manus.crop import crop
 
 
 def boundary(arg_string):

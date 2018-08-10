@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 
-from manos.crop import crop
+from manus.crop import crop
 
 # this is a hard-coded (4,4,3) numpy array that mimics a boolean
 # image with a "center" area; should crop to a (2,2,3) image
